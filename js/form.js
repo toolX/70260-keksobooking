@@ -4,6 +4,8 @@ var pin = document.querySelectorAll('.pin');
 var dialogBox = document.querySelector('.dialog');
 var dialogBoxClose = dialogBox.querySelector('.dialog__close');
 var form = document.querySelector('.notice__form');
+var title = form.querySelector('#title');
+var address = form.querySelector('#address');
 var time = form.querySelector('#time');
 var timeout = form.querySelector('#timeout');
 var type = form.querySelector('#type');
@@ -11,16 +13,14 @@ var price = form.querySelector('#price');
 var roomNumber = form.querySelector('#room_number');
 var capacity = form.querySelector('#capacity');
 
-var removeActivePin = function (elem) {
-  for (var i = 0; i < elem.length; i++) {
-    if (elem[i].classList.contains('pin--active')) {
-      elem[i].classList.remove('pin--active');
-    }
+var removeActivePin = function () {
+  var activePin = document.querySelector('.pin--active');
+  if (activePin) {
+    activePin.classList.remove('pin--active');
   }
-  return;
 };
 
-var roomCapacity = function () {
+var roomCapacityCheck = function () {
   if (roomNumber.selectedIndex === 0) {
     capacity.selectedIndex = 1;
   } else {
@@ -28,10 +28,18 @@ var roomCapacity = function () {
   }
 };
 
+var capacityCheck = function () {
+  if (capacity.selectedIndex === 0) {
+    roomNumber.selectedIndex = 1;
+  } else {
+    roomNumber.selectedIndex = 0;
+  }
+};
+
 for (var i = 0; i < pin.length; i++) {
-  pin[i].addEventListener('click', function () {
-    removeActivePin(pin);
-    this.classList.add('pin--active');
+  pin[i].addEventListener('click', function (event) {
+    removeActivePin();
+    event.currentTarget.classList.add('pin--active');
     if (dialogBox.classList.contains('hidden')) {
       dialogBox.classList.remove('hidden');
     }
@@ -41,7 +49,7 @@ for (var i = 0; i < pin.length; i++) {
 dialogBoxClose.addEventListener('click', function (event) {
   event.preventDefault();
   dialogBox.classList.add('hidden');
-  removeActivePin(pin);
+  removeActivePin();
 });
 
 time.addEventListener('change', function () {
@@ -65,8 +73,40 @@ type.addEventListener('change', function () {
   }
 });
 
-roomNumber.addEventListener('change', roomCapacity);
+roomNumber.addEventListener('change', roomCapacityCheck);
 
-removeActivePin(pin);
+capacity.addEventListener('change', capacityCheck);
 
-roomCapacity();
+title.addEventListener('keyup', function () {
+  var message = form.querySelector('.title-message');
+  if (!title.validity.valid) {
+    message.classList.add('invalid');
+    message.classList.remove('valid');
+    title.classList.add('invalid-input');
+    title.classList.remove('valid-input');
+  } else {
+    message.classList.remove('invalid');
+    message.classList.add('valid');
+    title.classList.remove('invalid-input');
+    title.classList.add('valid-input');
+  }
+});
+
+address.addEventListener('keyup', function () {
+  var message = form.querySelector('.address-message');
+  if (!address.validity.valid) {
+    message.classList.add('invalid');
+    message.classList.remove('valid');
+    address.classList.add('invalid-input');
+    address.classList.remove('valid-input');
+  } else {
+    message.classList.remove('invalid');
+    message.classList.add('valid');
+    address.classList.remove('invalid-input');
+    address.classList.add('valid-input');
+  }
+});
+
+removeActivePin();
+
+roomCapacityCheck();

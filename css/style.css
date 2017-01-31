@@ -66,12 +66,12 @@ input[type=text], input[type=number], select, textarea {
 }
 
 input[type=text]:hover, input[type=number]:hover, select:hover, textarea:hover {
-    border-color: #ffaa99;
+    border-color: #03a9e7;
 }
 
 input[type=text]:focus, input[type=number]:focus, select:focus, textarea:focus {
     outline: none;
-    box-shadow: 0 0 4px 1px #ff6547;
+    box-shadow: 0 0 4px 1px #0f9dd2;
 }
 
 select {
@@ -654,4 +654,35 @@ select option:hover {
 
 .hidden {
   display: none;
+}
+
+.invalid {
+  color: #ff6547;
+}
+
+.valid {
+  color: #15e650;
+}
+
+.invalid-input {
+  box-shadow: 0 0 4px 1px #ff6547;
+}
+
+.valid-input {
+  box-shadow: 0 0 4px 1px #15e650;
+}
+
+.message {
+  max-height: 0;
+  font-size: 12px;
+  text-align: center;
+  overflow: hidden;
+  transition: all .2s ease-out;
+}
+
+#title:focus + .message,
+#address:focus + .message {
+  max-height: 24px;
+  padding-top: 10px;
+  transition: all .2s ease-in;
 }
