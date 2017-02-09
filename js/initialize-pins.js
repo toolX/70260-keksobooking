@@ -1,6 +1,6 @@
 'use strict';
 
-window.initializePins = function () {
+window.initializePins = (function () {
   var appWindow = document.querySelector('.tokyo');
   var dialogBox = document.querySelector('.dialog');
   var dialogBoxClose = dialogBox.querySelector('.dialog__close');
@@ -78,4 +78,4 @@ window.initializePins = function () {
   });
 
   removeActivePin();
-};
+})();
