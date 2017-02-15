@@ -41,11 +41,35 @@
     }
   });
 
-  window.synchronizeFields(time, timeout, ['12', '13', '14'], ['12', '13', '14'], 'value');
+  window.synchronizeFields(time, timeout, ['12', '13', '14'], ['12', '13', '14'], 'value', function (val) {
+    timeout.value = val;
+  });
 
-  window.synchronizeFields(roomNumber, capacity, ['1', '2', '100'], ['0', '3', '3'], 'value');
+  window.synchronizeFields(timeout, time, ['12', '13', '14'], ['12', '13', '14'], 'value', function (val) {
+    time.value = val;
+  });
 
-  window.synchronizeFields(type, price, ['flat', 'shack', 'palace'], ['1000', '0', '10000'], 'placeholder');
+  window.synchronizeFields(roomNumber, capacity, ['1', '2', '100'], ['0', '3', '3'], 'value', function (val) {
+    capacity.value = val;
+  });
 
-  window.synchronizeFields(type, price, ['flat', 'shack', 'palace'], ['1000', '0', '10000'], 'min');
+  window.synchronizeFields(capacity, roomNumber, ['0', '3', '3'], ['1', '2', '100'], 'value', function (val) {
+    roomNumber.value = val;
+  });
+
+  window.synchronizeFields(type, price, ['flat', 'shack', 'palace'], ['1000', '0', '10000'], 'placeholder', function (val) {
+    price.value = val;
+  });
+
+  window.synchronizeFields(price, type, ['1000', '0', '10000'], ['flat', 'shack', 'palace'], 'placeholder', function (val) {
+    type.value = val;
+  });
+
+  window.synchronizeFields(type, price, ['flat', 'shack', 'palace'], ['1000', '0', '10000'], 'min', function (val) {
+    price.value = val;
+  });
+
+  window.synchronizeFields(price, type, ['1000', '0', '10000'], ['flat', 'shack', 'palace'], 'min', function (val) {
+    type.value = val;
+  });
 })();
