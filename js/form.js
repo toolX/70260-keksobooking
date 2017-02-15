@@ -41,35 +41,44 @@
     }
   });
 
-  window.synchronizeFields(time, timeout, ['12', '13', '14'], ['12', '13', '14'], 'value', function (val) {
+  var fieldValues = {
+    time: ['12', '13', '14'],
+    timeout: ['12', '13', '14'],
+    roomNumber: ['1', '2', '100'],
+    capacity: ['0', '3', '3'],
+    type: ['flat', 'shack', 'palace'],
+    price: ['1000', '0', '10000']
+  };
+
+  window.synchronizeFields(time, timeout, fieldValues.time, fieldValues.timeout, 'value', function (val) {
     timeout.value = val;
   });
 
-  window.synchronizeFields(timeout, time, ['12', '13', '14'], ['12', '13', '14'], 'value', function (val) {
+  window.synchronizeFields(timeout, time, fieldValues.timeout, fieldValues.time, 'value', function (val) {
     time.value = val;
   });
 
-  window.synchronizeFields(roomNumber, capacity, ['1', '2', '100'], ['0', '3', '3'], 'value', function (val) {
+  window.synchronizeFields(roomNumber, capacity, fieldValues.roomNumber, fieldValues.capacity, 'value', function (val) {
     capacity.value = val;
   });
 
-  window.synchronizeFields(capacity, roomNumber, ['0', '3', '3'], ['1', '2', '100'], 'value', function (val) {
+  window.synchronizeFields(capacity, roomNumber, fieldValues.capacity, fieldValues.roomNumber, 'value', function (val) {
     roomNumber.value = val;
   });
 
-  window.synchronizeFields(type, price, ['flat', 'shack', 'palace'], ['1000', '0', '10000'], 'placeholder', function (val) {
+  window.synchronizeFields(type, price, fieldValues.type, fieldValues.price, 'placeholder', function (val) {
     price.value = val;
   });
 
-  window.synchronizeFields(price, type, ['1000', '0', '10000'], ['flat', 'shack', 'palace'], 'placeholder', function (val) {
+  window.synchronizeFields(price, type, fieldValues.price, fieldValues.type, 'placeholder', function (val) {
     type.value = val;
   });
 
-  window.synchronizeFields(type, price, ['flat', 'shack', 'palace'], ['1000', '0', '10000'], 'min', function (val) {
+  window.synchronizeFields(type, price, fieldValues.type, fieldValues.price, 'min', function (val) {
     price.value = val;
   });
 
-  window.synchronizeFields(price, type, ['1000', '0', '10000'], ['flat', 'shack', 'palace'], 'min', function (val) {
+  window.synchronizeFields(price, type, fieldValues.price, fieldValues.type, 'min', function (val) {
     type.value = val;
   });
 })();
