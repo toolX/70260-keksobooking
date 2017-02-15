@@ -96,9 +96,7 @@
     window.synchronizeFields(item[0].element, item[1].element, item[0].values, item[1].values, item[0].field, function (val) {
       item[1].element.value = val;
     });
-  });
 
-  fieldValues.forEach(function (item) {
     window.synchronizeFields(item[1].element, item[0].element, item[1].values, item[0].values, item[0].field, function (val) {
       item[0].element.value = val;
     });
