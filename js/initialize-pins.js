@@ -15,7 +15,7 @@ window.initializePins = (function () {
     return event.keyCode === ESCAPE_KEY_CODE;
   };
 
-  var escapeKeydowHandler = function (event) {
+  var escapeKeydownHandler = function (event) {
     if (isEscapePressed(event)) {
       closeDialogBox();
     }
@@ -29,12 +29,24 @@ window.initializePins = (function () {
     }
   };
 
+  var setActivePin = function (elem) {
+    removeActivePin();
+    elem.classList.add('pin--active');
+    elem.setAttribute('aria-pressed', true);
+  };
+
+  var focusPin = function () {
+    var activePin = document.querySelector('.pin--active');
+    activePin.focus();
+  };
+
   var findPin = function (event) {
     var pin = event.target;
 
     while (pin !== appWindow) {
       if (pin.classList.contains('pin')) {
-        showDialogBox(pin);
+        window.showCard(pin, setActivePin);
+        document.addEventListener('keydown', escapeKeydownHandler);
         return;
       }
       pin = pin.parentNode;
@@ -49,20 +61,13 @@ window.initializePins = (function () {
     }
   });
 
-  var showDialogBox = function (elem) {
-    removeActivePin();
-    elem.classList.add('pin--active');
-    elem.setAttribute('aria-pressed', true);
-    if (dialogBox.classList.contains('hidden')) {
-      dialogBox.classList.remove('hidden');
-    }
-    document.addEventListener('keydown', escapeKeydowHandler);
-  };
-
-  var closeDialogBox = function (event) {
+  var closeDialogBox = function (event, callback) {
     dialogBox.classList.add('hidden');
+    document.removeEventListener('keydown', escapeKeydownHandler);
+    if (typeof callback === 'function') {
+      callback();
+    }
     removeActivePin();
-    document.removeEventListener('keydown', escapeKeydowHandler);
   };
 
   dialogBoxClose.addEventListener('click', function (event) {
@@ -73,7 +78,7 @@ window.initializePins = (function () {
   dialogBoxClose.addEventListener('keydown', function (event) {
     event.preventDefault();
     if (isEnterPressed(event)) {
-      closeDialogBox(event);
+      closeDialogBox(event, focusPin);
     }
   });
 

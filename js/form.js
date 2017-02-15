@@ -41,11 +41,64 @@
     }
   });
 
-  window.synchronizeFields(time, timeout, ['12', '13', '14'], ['12', '13', '14'], 'value');
+  var fieldValues = [
+    [
+      {
+        element: time,
+        values: ['12', '13', '14'],
+        field: 'value'
+      },
+      {
+        element: timeout,
+        values: ['12', '13', '14'],
+        field: 'value'
+      }
+    ],
+    [
+      {
+        element: roomNumber,
+        values: ['1', '2', '100'],
+        field: 'value'
+      },
+      {
+        element: capacity,
+        values: ['0', '3', '3'],
+        field: 'value'
+      }
+    ],
+    [
+      {
+        element: type,
+        values: ['flat', 'shack', 'palace'],
+        field: 'placeholder'
+      },
+      {
+        element: price,
+        values: ['1000', '0', '10000'],
+        field: 'placeholder'
+      }
+    ],
+    [
+      {
+        element: type,
+        values: ['flat', 'shack', 'palace'],
+        field: 'min'
+      },
+      {
+        element: price,
+        values: ['1000', '0', '10000'],
+        field: 'min'
+      }
+    ]
+  ];
 
-  window.synchronizeFields(roomNumber, capacity, ['1', '2', '100'], ['0', '3', '3'], 'value');
+  fieldValues.forEach(function (item) {
+    window.synchronizeFields(item[0].element, item[1].element, item[0].values, item[1].values, item[0].field, function (val) {
+      item[1].element.value = val;
+    });
 
-  window.synchronizeFields(type, price, ['flat', 'shack', 'palace'], ['1000', '0', '10000'], 'placeholder');
-
-  window.synchronizeFields(type, price, ['flat', 'shack', 'palace'], ['1000', '0', '10000'], 'min');
+    window.synchronizeFields(item[1].element, item[0].element, item[1].values, item[0].values, item[0].field, function (val) {
+      item[0].element.value = val;
+    });
+  });
 })();
