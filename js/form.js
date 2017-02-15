@@ -41,44 +41,66 @@
     }
   });
 
-  var fieldValues = {
-    time: ['12', '13', '14'],
-    timeout: ['12', '13', '14'],
-    roomNumber: ['1', '2', '100'],
-    capacity: ['0', '3', '3'],
-    type: ['flat', 'shack', 'palace'],
-    price: ['1000', '0', '10000']
-  };
+  var fieldValues = [
+    [
+      {
+        element: time,
+        values: ['12', '13', '14'],
+        field: 'value'
+      },
+      {
+        element: timeout,
+        values: ['12', '13', '14'],
+        field: 'value'
+      }
+    ],
+    [
+      {
+        element: roomNumber,
+        values: ['1', '2', '100'],
+        field: 'value'
+      },
+      {
+        element: capacity,
+        values: ['0', '3', '3'],
+        field: 'value'
+      }
+    ],
+    [
+      {
+        element: type,
+        values: ['flat', 'shack', 'palace'],
+        field: 'placeholder'
+      },
+      {
+        element: price,
+        values: ['1000', '0', '10000'],
+        field: 'placeholder'
+      }
+    ],
+    [
+      {
+        element: type,
+        values: ['flat', 'shack', 'palace'],
+        field: 'min'
+      },
+      {
+        element: price,
+        values: ['1000', '0', '10000'],
+        field: 'min'
+      }
+    ]
+  ];
 
-  window.synchronizeFields(time, timeout, fieldValues.time, fieldValues.timeout, 'value', function (val) {
-    timeout.value = val;
+  fieldValues.forEach(function (item) {
+    window.synchronizeFields(item[0].element, item[1].element, item[0].values, item[1].values, item[0].field, function (val) {
+      item[1].element.value = val;
+    });
   });
 
-  window.synchronizeFields(timeout, time, fieldValues.timeout, fieldValues.time, 'value', function (val) {
-    time.value = val;
-  });
-
-  window.synchronizeFields(roomNumber, capacity, fieldValues.roomNumber, fieldValues.capacity, 'value', function (val) {
-    capacity.value = val;
-  });
-
-  window.synchronizeFields(capacity, roomNumber, fieldValues.capacity, fieldValues.roomNumber, 'value', function (val) {
-    roomNumber.value = val;
-  });
-
-  window.synchronizeFields(type, price, fieldValues.type, fieldValues.price, 'placeholder', function (val) {
-    price.value = val;
-  });
-
-  window.synchronizeFields(price, type, fieldValues.price, fieldValues.type, 'placeholder', function (val) {
-    type.value = val;
-  });
-
-  window.synchronizeFields(type, price, fieldValues.type, fieldValues.price, 'min', function (val) {
-    price.value = val;
-  });
-
-  window.synchronizeFields(price, type, fieldValues.price, fieldValues.type, 'min', function (val) {
-    type.value = val;
+  fieldValues.forEach(function (item) {
+    window.synchronizeFields(item[1].element, item[0].element, item[1].values, item[0].values, item[0].field, function (val) {
+      item[0].element.value = val;
+    });
   });
 })();
