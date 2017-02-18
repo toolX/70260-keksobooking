@@ -615,9 +615,6 @@ select option:hover {
     width: 56px;
     height: 75px;
 
-    top: 340px;
-    left: 536px;
-
     background-image: url("../img/pin.png");
 }
 

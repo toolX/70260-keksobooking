@@ -4,8 +4,31 @@ window.initializePins = (function () {
   var appWindow = document.querySelector('.tokyo');
   var dialogBox = document.querySelector('.dialog');
   var dialogBoxClose = dialogBox.querySelector('.dialog__close');
+  var pinMap = document.querySelector('.tokyo__pin-map');
+  var similarApartments;
   var ESCAPE_KEY_CODE = 27;
   var ENTER_KEY_CODE = 13;
+
+  var loadData = function () {
+    window.load('https://intensive-javascript-server-pedmyactpq.now.sh/keksobooking/data', function (data) {
+      similarApartments = data;
+      renderData();
+    });
+    return similarApartments;
+  };
+
+  loadData();
+
+  var renderData = function () {
+    // var adsArray = similarApartments.slice(0, 3);
+    similarApartments.forEach(function (ad) {
+      pinMap.appendChild(window.render(ad));
+    });
+  };
+
+  window.errorHandler = function (err) {
+    pinMap.innerHTML = err;
+  };
 
   var isEnterPressed = function (event) {
     return event.keyCode === ENTER_KEY_CODE;
@@ -45,7 +68,7 @@ window.initializePins = (function () {
 
     while (pin !== appWindow) {
       if (pin.classList.contains('pin')) {
-        window.showCard(pin, setActivePin);
+        window.showCard(pin, pin.data, setActivePin);
         document.addEventListener('keydown', escapeKeydownHandler);
         return;
       }
