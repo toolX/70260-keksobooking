@@ -18,18 +18,22 @@ var switchType = function (lodgeType) {
   return lType;
 };
 
-var setFeatures = function (arr1, arr2) {
+var setFeatures = function (arr1, arr2, callback) {
+  callback(arr1);
   [].forEach.call(arr1, function (el, i) {
-    if (el.classList[1].indexOf(arr2[i]) !== -1) {
-      el.style.outline = '1px solid red';
+    var elClass = el.classList[1].split('--');
+    if (elClass && arr2.indexOf(elClass[1]) >= 0) {
+      el.style.display = 'inline';
+    } else {
+      el.style.display = 'none';
     }
   });
 };
 
 var removeFeatures = function (features) {
   [].forEach.call(features, function (el) {
-    if (el.style.outline) {
-      el.style.outline = '';
+    if (el.style.display === 'none') {
+      el.style.display = 'inline';
     }
   });
 };
@@ -59,8 +63,7 @@ window.showCard = function (elem, data, callback) {
   type.innerHTML = switchType(data.offer.type);
   roomsGuests.innerHTML = data.offer.rooms + ' комнаты для ' + data.offer.guests + ' гостей';
   checkin.innerHTML = 'Заезд после ' + data.offer.checkin + ', выезд после ' + data.offer.checkout;
-  removeFeatures(features);
-  setFeatures(features, data.offer.features);
+  setFeatures(features, data.offer.features, removeFeatures);
   setPhoto(photos, data.offer.photos);
   dialogDescription.innerHTML = data.offer.description;
 

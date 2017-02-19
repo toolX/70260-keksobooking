@@ -8,6 +8,8 @@ window.render = (function () {
     var newPin = pinElement.cloneNode(true);
     newPin.style.left = pin.location.x + 'px';
     newPin.style.top = pin.location.y + 'px';
+    newPin.setAttribute('role', 'button');
+    newPin.setAttribute('tabindex', '1');
     newPin.data = pin;
 
     // var pinImage = newPin.children[0];
