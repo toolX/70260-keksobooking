@@ -3,20 +3,18 @@
 window.initializePins = (function () {
   var appWindow = document.querySelector('.tokyo');
   var pinMap = document.querySelector('.tokyo__pin-map');
-  // var filters = document.querySelector('.tokyo__filters');
+  var filtersToSelect = document.querySelector('.tokyo__filters');
   var similarApartments;
   var copiedDataArray;
   var filters = ['housing_type', 'housing_price', 'housing_room-number', 'housing_guests-number', 'wifi', 'dishwasher', 'parking', 'washer', 'elevator', 'conditioner'];
 
-  // // Получение значения атрибута value из полей фильтров
-  // filters.addEventListener('change', function (event) {
-  //   // createObject(event.target, event.target.id, event.target.value);
-  //   // switchId(event.target, event.target.id, event.target.value);
-  //   // currentElement = event.target;
-  // });
+  // Установка обработчика событий на блок с фильтрами
+  filtersToSelect.addEventListener('change', function (event) {
+    sortAppartments(filters, resetCopiedArray);
+  });
 
-  // Получение одинаковых полей или поля any для установки начальных фильтров
-  var getSameFields = function (arr, field, filter) {
+  // Установка начальных фильтров (кроме фильтра по цене и чекбоксов)
+  var setSameFields = function (arr, field, filter) {
     var selectField = document.querySelector('#' + filter);
     var fieldsArray = [];
 
@@ -27,38 +25,41 @@ window.initializePins = (function () {
       return e === fieldsArray[0];
     };
     if (fieldsArray.every(b)) {
-
       selectField.value = fieldsArray[0];
     } else {
       selectField.value = 'any';
     }
   };
 
-  var getSamePriceFields = function (arr) {
+  // Начальная установка фильтра по цене
+  var setSamePriceFields = function (arr, field, filter) {
+    var selectField = document.querySelector('#' + filter);
     var fieldsArray = [];
 
     arr.forEach(function (element) {
-      var filter = element.offer.price;
-      if (filter < 10000) {
+      var value = element.offer[field];
+      if (value < 10000) {
         fieldsArray.push('low');
-      } else if (filter < 50000) {
+      } else if (value < 50000) {
         fieldsArray.push('middle');
       } else {
         fieldsArray.push('hight');
       }
     });
 
-    var filter = fieldsArray.reduce(function (prev, next) {
+    var elementFilter = fieldsArray.reduce(function (prev, next) {
       if (prev === next) {
         return next;
       } else {
         return 'any';
       }
     });
-    return filter;
+
+    selectField.value = elementFilter;
   };
 
-  var getSameCheckboxFields = function (arr, filter, field) {
+  // Включение чекбоксов при начальной установке фильтров
+  var setSameCheckboxFields = function (arr, filter, field) {
     var checkbox = document.querySelector('#' + filter);
 
     var areElementsEqual = function (element) {
@@ -72,50 +73,105 @@ window.initializePins = (function () {
     }
   };
 
+  // Начальная установка фильтров согласно общим значениям
   var setInitialFilters = function (filtersArray, data) {
     filtersArray.forEach(function (filter) {
-      var fieldToSelect = document.querySelector('#' + filter);
-
       switch (filter) {
         case 'housing_type':
-          getSameFields(data, 'type', filter);
+          setSameFields(data, 'type', filter);
           break;
         case 'housing_price':
-          fieldToSelect.value = getSamePriceFields(data, 'price');
+          setSamePriceFields(data, 'price', filter);
           break;
         case 'housing_room-number':
-          getSameFields(data, 'rooms', filter);
+          setSameFields(data, 'rooms', filter);
           break;
         case 'housing_guests-number':
-          getSameFields(data, 'guests', filter);
+          setSameFields(data, 'guests', filter);
           break;
         default:
-          getSameCheckboxFields(data, filter, 'features');
+          setSameCheckboxFields(data, filter, 'features');
           break;
       }
     });
   };
 
-  // // Выбор ключа объекта
-  // var switchId = function (element, id, filter) {
-  //
-  //   switch (id) {
-  //     case 'housing_type':
-  //       sortByHousingType('type', filter, similarApartments);
-  //       break;
-  //     case 'housing_price':
-  //       sortByHousingPrice('price', filter, copiedDataArray);
-  //       break;
-  //     case 'housing_room-number':
-  //       sortByNumber('rooms', filter, copiedDataArray);
-  //       break;
-  //     case 'housing_guests-number':
-  //       sortByNumber('guests', filter, copiedDataArray);
-  //       break;
-  //     default:
-  //       sortByFeatures(element, 'features', filter, copiedDataArray);
-  //   }
-  // };
+  // Сортировка объявлений по текстовым полям
+  var sortArrayByTextFields = function (arr, value, field) {
+    var newArr = [];
+    if (field === 'any') {
+      copiedDataArray = arr;
+    } else {
+      arr.forEach(function (element) {
+        if (element.offer[value].toString() === field) {
+          newArr.push(element);
+        }
+      });
+      copiedDataArray = newArr;
+    }
+  };
+
+  // Сортировка объявлений по цене
+  var sortArrayByPrice = function (arr, value, field) {
+    var newArr = [];
+    arr.forEach(function (el) {
+      if (field === 'low' && +el.offer[value] < 10000) {
+        newArr.push(el);
+      } else if (field === 'middle' && (+el.offer[value] > 10000 && +el.offer[value] < 50000)) {
+        newArr.push(el);
+      } else if (field === 'hight' && +el.offer[value] >= 50000) {
+        newArr.push(el);
+      } else if (field === 'any') {
+        newArr.push(el);
+      }
+    });
+    copiedDataArray = newArr;
+  };
+
+  // Сортировка объявлений по чекбоксам
+  var sortArrayByCheckboxes = function (arr, value, field) {
+    if (field.checked) {
+      var newArr = [];
+      arr.forEach(function (el) {
+        if (el.offer[value].indexOf(field.value) >= 0) {
+          newArr.push(el);
+        }
+      });
+      copiedDataArray = newArr;
+    }
+  };
+
+  // Очистка скопированного массива с объявлениями
+  var resetCopiedArray = function () {
+    copiedDataArray = similarApartments;
+  };
+
+  // Отрисовка объявлений согласно отсортированным данным
+  var sortAppartments = function (filtersArray, callback) {
+
+    filtersArray.forEach(function (filter) {
+      var field = document.querySelector('#' + filter);
+
+      switch (filter) {
+        case 'housing_type':
+          sortArrayByTextFields(copiedDataArray, 'type', field.value);
+          break;
+        case 'housing_price':
+          sortArrayByPrice(copiedDataArray, 'price', field.value);
+          break;
+        case 'housing_room-number':
+          sortArrayByTextFields(copiedDataArray, 'rooms', field.value);
+          break;
+        case 'housing_guests-number':
+          sortArrayByTextFields(copiedDataArray, 'guests', field.value);
+          break;
+        default:
+          sortArrayByCheckboxes(copiedDataArray, 'features', field);
+      }
+    });
+    renderData(copiedDataArray);
+    callback();
+  };
 
   // Загрузка данных через ajax
   var loadData = function () {
@@ -137,7 +193,7 @@ window.initializePins = (function () {
     setInitialFilters(filters, firstThreeAds);
   };
 
-  // Отрисовка меток на основе объекта отсортированных данных и закрытие открытого диалогового окна
+  // Отрисовка меток на основе отсортированных данных и закрытие открытого диалогового окна
   var renderData = function (sortedData) {
     removePin();
     window.closeDialogBox();
