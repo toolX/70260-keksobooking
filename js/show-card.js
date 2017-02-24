@@ -1,6 +1,7 @@
 'use strict';
 
 var dialogBox = document.querySelector('.dialog');
+var dialogBoxClose = dialogBox.querySelector('.dialog__close');
 
 var switchType = function (lodgeType) {
   var lType = '';
@@ -48,6 +49,7 @@ var setPhoto = function (container, photos) {
 
 window.showCard = function (elem, data, callback) {
   var title = dialogBox.querySelector('#dialogTitle');
+  var image = dialogBox.querySelector('.dialog__title img');
   var address = dialogBox.querySelector('.lodge__address');
   var price = dialogBox.querySelector('.lodge__price');
   var type = dialogBox.querySelector('.lodge__type');
@@ -58,6 +60,7 @@ window.showCard = function (elem, data, callback) {
   var photosBox = dialogBox.querySelector('.lodge__photos');
   var photos = photosBox.children;
   title.innerHTML = data.offer.title;
+  image.src = data.author.avatar;
   address.innerHTML = data.offer.address;
   price.innerHTML = data.offer.price + '&#x20bd;/ночь';
   type.innerHTML = switchType(data.offer.type);
@@ -72,3 +75,29 @@ window.showCard = function (elem, data, callback) {
   }
   callback(elem);
 };
+
+// Закрытие диалогового окна
+window.closeDialogBox = function (event, callback) {
+  if (!dialogBox.classList.contains('hidden')) {
+    dialogBox.classList.add('hidden');
+    document.removeEventListener('keydown', window.utils.escapeKeydownHandler);
+    if (typeof callback === 'function') {
+      callback();
+    }
+    window.removeActivePin();
+  }
+};
+
+// Закрытие диалогового окна по клику
+dialogBoxClose.addEventListener('click', function (event) {
+  event.preventDefault();
+  window.closeDialogBox(event);
+});
+
+// Закрытие диалогового окна по нажатию на клавишу
+dialogBoxClose.addEventListener('keydown', function (event) {
+  event.preventDefault();
+  if (window.utils.isEnterPressed(event)) {
+    window.closeDialogBox(event, window.focusPin);
+  }
+});

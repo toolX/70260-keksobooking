@@ -2,147 +2,120 @@
 
 window.initializePins = (function () {
   var appWindow = document.querySelector('.tokyo');
-  var dialogBox = document.querySelector('.dialog');
-  var dialogBoxClose = dialogBox.querySelector('.dialog__close');
   var pinMap = document.querySelector('.tokyo__pin-map');
-  var filters = document.querySelector('.tokyo__filters');
+  // var filters = document.querySelector('.tokyo__filters');
   var similarApartments;
-  var copiedDataArray = [];
-  // var currentElement = null;
-  var query = [];
-  var ESCAPE_KEY_CODE = 27;
-  var ENTER_KEY_CODE = 13;
+  var copiedDataArray;
+  var filters = ['housing_type', 'housing_price', 'housing_room-number', 'housing_guests-number', 'wifi', 'dishwasher', 'parking', 'washer', 'elevator', 'conditioner'];
 
-  // Получение значения атрибута value из полей фильтров
-  filters.addEventListener('change', function (event) {
-    createObject(event.target, event.target.id, event.target.value);
-    // switchId(event.target, event.target.id, event.target.value);
-    // currentElement = event.target;
-  });
+  // // Получение значения атрибута value из полей фильтров
+  // filters.addEventListener('change', function (event) {
+  //   // createObject(event.target, event.target.id, event.target.value);
+  //   // switchId(event.target, event.target.id, event.target.value);
+  //   // currentElement = event.target;
+  // });
 
-  // Сортировка массива similarApartments на основе фильтра housing_type
-  var sortByHousingType = function (field, filter, array) {
-    var sortedArray = [];
+  // Получение одинаковых полей или поля any для установки начальных фильтров
+  var getSameFields = function (arr, field, filter) {
+    var selectField = document.querySelector('#' + filter);
+    var fieldsArray = [];
 
-    if (filter === 'any') {
-      sortedArray = similarApartments;
-    } else {
-      similarApartments.forEach(function (el) {
-        if (el.offer[field] === filter) {
-          sortedArray.push(el);
-        }
-      });
-    }
-    copiedDataArray = sortedArray;
-    renderData(sortedArray);
-  };
-
-  // Сортировка массива similarApartments на основе фильтра housing_price
-  var sortByHousingPrice = function (field, filter, array) {
-    var sortedArray = [];
-
-    array.forEach(function (el) {
-      if (filter === 'low' && +el.offer.price < 10000) {
-        sortedArray.push(el);
-      } else if (filter === 'middle' && (+el.offer.price > 10000 && +el.offer.price < 50000)) {
-        sortedArray.push(el);
-      } else if (filter === 'hight' && +el.offer.price >= 50000) {
-        sortedArray.push(el);
-      }
+    arr.forEach(function (e) {
+      fieldsArray.push(e.offer[field]);
     });
-    // copiedDataArray = sortedArray;
-    renderData(sortedArray);
-  };
+    var b = function (e) {
+      return e === fieldsArray[0];
+    };
+    if (fieldsArray.every(b)) {
 
-  // Сортировка массива similarApartments на основе фильтров housing_rooms_number и housing_guests_number
-  var sortByNumber = function (objKey, filter, array) {
-    var sortedArray = [];
-
-    if (filter === 'any') {
-      sortedArray = array;
+      selectField.value = fieldsArray[0];
     } else {
-      array.forEach(function (el) {
-        if (el.offer[objKey] === +filter) {
-          sortedArray.push(el);
-        }
-      });
-    }
-    // copiedDataArray = sortedArray;
-    renderData(sortedArray);
-  };
-
-  // Сортировка массива similarApartments на основе фильтра feature
-  var sortByFeatures = function (element, objKey, filter, array) {
-    var sortedArray = [];
-    var duplicateArray = array;
-
-    if (element.checked) {
-      array.forEach(function (el) {
-        if (el.offer[objKey].indexOf(filter) >= 0) {
-          sortedArray.push(el);
-        }
-      });
-      copiedDataArray = sortedArray;
-      renderData(sortedArray);
-    } else {
-      sortedArray = copiedDataArray = duplicateArray;
-      renderData(sortedArray);
+      selectField.value = 'any';
     }
   };
 
-  var createObject = function (element, id, filter) {
-    // var queryObj = {};
-    var str = '';
-    if (!id) {
-      str = 'features: ' + filter;
-      // queryObj.features = [];
-      // queryObj.features.push(filter);
-      // if (queryObj.features.indexOf(filter) >= 0) {
-      //   queryObj.features.splice(queryObj.features.indexOf(filter), 1);
-      // }
-      if (query.indexOf(filter) >= 0) {
-        query.splice(query.indexOf(filter), 1);
+  var getSamePriceFields = function (arr) {
+    var fieldsArray = [];
+
+    arr.forEach(function (element) {
+      var filter = element.offer.price;
+      if (filter < 10000) {
+        fieldsArray.push('low');
+      } else if (filter < 50000) {
+        fieldsArray.push('middle');
       } else {
-        query.push(str);
+        fieldsArray.push('hight');
       }
-    } else {
-      str = id + ': ' + filter;
-      query.push(str);
-    }
-    // else if (!id && queryObj.features.indexOf(filter) >= 0) {
-    //   queryObj.features.splice(queryObj.features.indexOf(filter), 1);
-    // } else if (!id && queryObj.features.indexOf(filter) < 0) {
-    //   queryObj.features.push(filter);
-    // }
-    query.forEach(function (el) {
-      var newElement = el.split(':');
-      switchId(element, newElement[0], newElement[1].trim());
     });
-    // for (var key in query) {
-    //   switchId(element, key, query[key]);
-    // }
+
+    var filter = fieldsArray.reduce(function (prev, next) {
+      if (prev === next) {
+        return next;
+      } else {
+        return 'any';
+      }
+    });
+    return filter;
   };
 
-  // Выбор ключа объекта
-  var switchId = function (element, id, filter) {
+  var getSameCheckboxFields = function (arr, filter, field) {
+    var checkbox = document.querySelector('#' + filter);
 
-    switch (id) {
-      case 'housing_type':
-        sortByHousingType('type', filter, copiedDataArray);
-        break;
-      case 'housing_price':
-        sortByHousingPrice('price', filter, copiedDataArray);
-        break;
-      case 'housing_room-number':
-        sortByNumber('rooms', filter, copiedDataArray);
-        break;
-      case 'housing_guests-number':
-        sortByNumber('guests', filter, copiedDataArray);
-        break;
-      default:
-        sortByFeatures(element, 'features', filter, copiedDataArray);
+    var areElementsEqual = function (element) {
+      var value = element.offer[field];
+      return value.indexOf(filter) >= 0;
+    };
+    if (arr.every(areElementsEqual)) {
+      checkbox.checked = true;
+    } else {
+      checkbox.checked = false;
     }
   };
+
+  var setInitialFilters = function (filtersArray, data) {
+    filtersArray.forEach(function (filter) {
+      var fieldToSelect = document.querySelector('#' + filter);
+
+      switch (filter) {
+        case 'housing_type':
+          getSameFields(data, 'type', filter);
+          break;
+        case 'housing_price':
+          fieldToSelect.value = getSamePriceFields(data, 'price');
+          break;
+        case 'housing_room-number':
+          getSameFields(data, 'rooms', filter);
+          break;
+        case 'housing_guests-number':
+          getSameFields(data, 'guests', filter);
+          break;
+        default:
+          getSameCheckboxFields(data, filter, 'features');
+          break;
+      }
+    });
+  };
+
+  // // Выбор ключа объекта
+  // var switchId = function (element, id, filter) {
+  //
+  //   switch (id) {
+  //     case 'housing_type':
+  //       sortByHousingType('type', filter, similarApartments);
+  //       break;
+  //     case 'housing_price':
+  //       sortByHousingPrice('price', filter, copiedDataArray);
+  //       break;
+  //     case 'housing_room-number':
+  //       sortByNumber('rooms', filter, copiedDataArray);
+  //       break;
+  //     case 'housing_guests-number':
+  //       sortByNumber('guests', filter, copiedDataArray);
+  //       break;
+  //     default:
+  //       sortByFeatures(element, 'features', filter, copiedDataArray);
+  //   }
+  // };
 
   // Загрузка данных через ajax
   var loadData = function () {
@@ -154,22 +127,6 @@ window.initializePins = (function () {
     return similarApartments;
   };
 
-  // // Создание массива на основе фильтров
-  // var createFilteredArray = function (data, filtersObj) {
-  //   var array = [];
-  //
-  //   data.forEach(function (el) {
-  //     for (var key in filtersObj) {
-  //       var field = key;
-  //       var value = filtersObj[key];
-  //       // if (el.offer[field] && el.offer[field].value) {
-  //       //   array.push(el);
-  //       // }
-  //     }
-  //   });
-  //   console.log(array);
-  // };
-
   // Отрисовка первых трех меток
   var renderFirstThreePins = function () {
     removePin();
@@ -177,14 +134,13 @@ window.initializePins = (function () {
     firstThreeAds.forEach(function (ad) {
       pinMap.appendChild(window.render(ad));
     });
+    setInitialFilters(filters, firstThreeAds);
   };
 
   // Отрисовка меток на основе объекта отсортированных данных и закрытие открытого диалогового окна
   var renderData = function (sortedData) {
     removePin();
-    if (!dialogBox.classList.contains('hidden')) {
-      closeDialogBox();
-    }
+    window.closeDialogBox();
     sortedData.forEach(function (ad) {
       pinMap.appendChild(window.render(ad));
     });
@@ -195,25 +151,8 @@ window.initializePins = (function () {
     pinMap.innerHTML = err;
   };
 
-  // Проверка нажатия клавиши enter
-  var isEnterPressed = function (event) {
-    return event.keyCode === ENTER_KEY_CODE;
-  };
-
-  // Проверка нажатия клавиши escape
-  var isEscapePressed = function (event) {
-    return event.keyCode === ESCAPE_KEY_CODE;
-  };
-
-  // Закрытие диалогового окна при нажатии клавиши escape
-  var escapeKeydownHandler = function (event) {
-    if (isEscapePressed(event)) {
-      closeDialogBox();
-    }
-  };
-
   // Удаление метки с классом .pin--active
-  var removeActivePin = function () {
+  window.removeActivePin = function () {
     var activePin = document.querySelector('.pin--active');
     if (activePin) {
       activePin.classList.remove('pin--active');
@@ -234,13 +173,13 @@ window.initializePins = (function () {
 
   // Установка метке класса .pin--active
   var setActivePin = function (elem) {
-    removeActivePin();
+    window.removeActivePin();
     elem.classList.add('pin--active');
     elem.setAttribute('aria-pressed', true);
   };
 
   // Установка фокуса на активную метку
-  var focusPin = function () {
+  window.focusPin = function () {
     var activePin = document.querySelector('.pin--active');
     activePin.focus();
   };
@@ -252,7 +191,7 @@ window.initializePins = (function () {
     while (pin !== appWindow) {
       if (pin.classList.contains('pin')) {
         window.showCard(pin, pin.data, setActivePin);
-        document.addEventListener('keydown', escapeKeydownHandler);
+        document.addEventListener('keydown', window.utils.escapeKeydownHandler);
         return;
       }
       pin = pin.parentNode;
@@ -264,32 +203,8 @@ window.initializePins = (function () {
 
   // Добавление обработчика события нажатия клавиши на карту
   appWindow.addEventListener('keydown', function (event) {
-    if (isEnterPressed(event)) {
+    if (window.utils.isEnterPressed(event)) {
       findPin(event);
-    }
-  });
-
-  // Закрытие диалогового окна
-  var closeDialogBox = function (event, callback) {
-    dialogBox.classList.add('hidden');
-    document.removeEventListener('keydown', escapeKeydownHandler);
-    if (typeof callback === 'function') {
-      callback();
-    }
-    removeActivePin();
-  };
-
-  // Закрытие диалогового окна по клику
-  dialogBoxClose.addEventListener('click', function (event) {
-    event.preventDefault();
-    closeDialogBox(event);
-  });
-
-  // Закрытие диалогового окна по нажатию на клавишу
-  dialogBoxClose.addEventListener('keydown', function (event) {
-    event.preventDefault();
-    if (isEnterPressed(event)) {
-      closeDialogBox(event, focusPin);
     }
   });
 
