@@ -1,11 +1,13 @@
 'use strict';
 
 (function () {
-  window.synchronizeFields = function (domElem1, domElem2, arr1, arr2, prop, callback) {
 
-    domElem1.addEventListener('change', function () {
-      var value = arr1.indexOf(domElem1.value);
-      callback(arr2[value]);
+  // Функция синхронизации полей формы
+  window.synchronizeFields = function (domElement1, domElement2, array1, array2, property, callback) {
+
+    domElement1.addEventListener('change', function () {
+      var value = array1.indexOf(domElement1.value);
+      callback(array2[value]);
     });
 
   };

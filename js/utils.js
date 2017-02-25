@@ -1,6 +1,8 @@
 'use strict';
 
 (function () {
+
+  // Служебные значения и функции
   window.utils = {
     ESCAPE_KEY_CODE: 27,
     ENTER_KEY_CODE: 13,

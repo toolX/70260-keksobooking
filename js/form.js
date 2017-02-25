@@ -11,6 +11,7 @@
   var roomNumber = form.querySelector('#room_number');
   var capacity = form.querySelector('#capacity');
 
+  // Валидация поля title
   title.addEventListener('keyup', function () {
     var message = form.querySelector('.title-message');
     if (!title.validity.valid) {
@@ -26,21 +27,12 @@
     }
   });
 
-  address.addEventListener('keyup', function () {
-    var message = form.querySelector('.address-message');
-    if (!address.validity.valid) {
-      message.classList.add('invalid');
-      message.classList.remove('valid');
-      address.classList.add('invalid-input');
-      address.classList.remove('valid-input');
-    } else {
-      message.classList.remove('invalid');
-      message.classList.add('valid');
-      address.classList.remove('invalid-input');
-      address.classList.add('valid-input');
-    }
-  });
+  // Установка значения в поле address
+  window.getAddress = function (xCoord, yCoord) {
+    address.setAttribute('value', 'x: ' + xCoord + ' y: ' + yCoord);
+  };
 
+  // Массив объектов с данными для синхронизации полей
   var fieldValues = [
     [
       {
@@ -92,6 +84,7 @@
     ]
   ];
 
+  // Синхронизация полей
   fieldValues.forEach(function (item) {
     window.synchronizeFields(item[0].element, item[1].element, item[0].values, item[1].values, item[0].field, function (val) {
       item[1].element.value = val;
