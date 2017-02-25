@@ -12,8 +12,8 @@ window.render = (function () {
     newPin.setAttribute('tabindex', '1');
     newPin.data = pin;
 
-    // var pinImage = newPin.children[0];
-    // pinImage.src = pin.author.avatar;
+    var pinImage = newPin.children[0];
+    pinImage.src = pin.author.avatar;
 
     return newPin;
   };
