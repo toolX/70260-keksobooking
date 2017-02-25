@@ -2,6 +2,7 @@
 
 window.render = (function () {
 
+  // Функция копирования и отрисовки пинов на карте
   return function (pin) {
     var pinTemplate = document.querySelector('#pin-template');
     var pinElement = pinTemplate.content.querySelector('.pin');

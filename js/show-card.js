@@ -2,64 +2,123 @@
 
 (function () {
   var dialogBox = document.querySelector('.dialog');
+  var title = dialogBox.querySelector('#dialogTitle');
+  var image = dialogBox.querySelector('.dialog__title img');
+  var address = dialogBox.querySelector('.lodge__address');
+  var price = dialogBox.querySelector('.lodge__price');
+  var type = dialogBox.querySelector('.lodge__type');
+  var roomsGuests = dialogBox.querySelector('.lodge__rooms-and-guests');
+  var checkin = dialogBox.querySelector('.lodge__checkin-time');
+  var features = dialogBox.querySelectorAll('.feature__image');
+  var dialogDescription = dialogBox.querySelector('#dialogDescription');
+  var photosBox = dialogBox.querySelector('.lodge__photos');
+  var photos = photosBox.children;
+  var dialogBoxHandler = dialogBox.querySelector('.dialog__title img');
   var dialogBoxClose = dialogBox.querySelector('.dialog__close');
+  var DIALOGBOX_LEFT_EDGE = 0;
+  var DIALOGBOX_RIGHT_EDGE = 970;
+  var DIALOGBOX_TOP_EDGE = 75;
+  var DIALOGBOX_BOTTOM_EDGE = 585;
 
+  // Установка обработчика события передвижения диалогового окна по карте
+  dialogBoxHandler.addEventListener('mousedown', function (event) {
+    event.preventDefault();
+
+    var startCoords = {
+      x: event.clientX,
+      y: event.clientY
+    };
+
+    var onMouseMove = function (moveEvent) {
+      moveEvent.preventDefault();
+
+      var shift = {
+        x: startCoords.x - moveEvent.clientX,
+        y: startCoords.y - moveEvent.clientY
+      };
+
+      startCoords = {
+        x: moveEvent.clientX,
+        y: moveEvent.clientY
+      };
+
+      if (dialogBox.offsetTop - shift.y < DIALOGBOX_TOP_EDGE) {
+        dialogBox.style.top = DIALOGBOX_TOP_EDGE + 'px';
+      } else if (dialogBox.offsetTop - shift.y > DIALOGBOX_BOTTOM_EDGE) {
+        dialogBox.style.top = DIALOGBOX_BOTTOM_EDGE + 'px';
+      }
+
+      if (dialogBox.offsetLeft - shift.x < DIALOGBOX_LEFT_EDGE) {
+        dialogBox.style.left = DIALOGBOX_LEFT_EDGE + 'px';
+      } else if (dialogBox.offsetLeft - shift.x > DIALOGBOX_RIGHT_EDGE) {
+        dialogBox.style.left = DIALOGBOX_RIGHT_EDGE + 'px';
+      }
+
+      dialogBox.style.top = (dialogBox.offsetTop - shift.y) + 'px';
+      dialogBox.style.left = (dialogBox.offsetLeft - shift.x) + 'px';
+    };
+
+    var onMouseUp = function (upEvent) {
+      upEvent.preventDefault();
+
+      document.removeEventListener('mousemove', onMouseMove);
+      document.removeEventListener('mouseup', onMouseUp);
+    };
+
+    document.addEventListener('mousemove', onMouseMove);
+    document.addEventListener('mouseup', onMouseUp);
+  });
+
+  // Перевод английского варианта типа помещения на русский
   var switchType = function (lodgeType) {
-    var type = '';
+    var newType = '';
     switch (lodgeType) {
       case 'flat':
-        type = 'Квартира';
+        newType = 'Квартира';
         break;
       case 'bungalo':
-        type = 'Бунгало';
+        newType = 'Бунгало';
         break;
       case 'house':
-        type = 'Дворец';
+        newType = 'Дворец';
         break;
     }
-    return type;
+    return newType;
   };
 
+  // Отображение в диалоговом окне только доступных свойств
   var setFeatures = function (arr1, arr2, callback) {
     callback(arr1);
-    [].forEach.call(arr1, function (el, i) {
-      var elClass = el.classList[1].split('--');
+    [].forEach.call(arr1, function (element) {
+      var elClass = element.classList[1].split('--');
       if (elClass && arr2.indexOf(elClass[1]) >= 0) {
-        el.style.display = 'inline';
+        element.style.display = 'inline';
       } else {
-        el.style.display = 'none';
+        element.style.display = 'none';
       }
     });
   };
 
-  var removeFeatures = function (features) {
-    [].forEach.call(features, function (el) {
-      if (el.style.display === 'none') {
-        el.style.display = 'inline';
+  // Очистка всех установленных свойств в диалоговом окне
+  var removeFeatures = function (dialogBoxFeatures) {
+    [].forEach.call(features, function (element) {
+      if (element.style.display === 'none') {
+        element.style.display = 'inline';
       }
     });
   };
 
-  var setPhoto = function (container, photos) {
-    [].forEach.call(container, function (el, i) {
-      if (photos[i]) {
-        el.src = photos[i];
+  // Отображение фотографий
+  var setPhoto = function (container, pictures) {
+    [].forEach.call(container, function (element, index) {
+      if (pictures[index]) {
+        element.src = pictures[index];
       }
     });
   };
 
-  window.showCard = function (elem, data, callback) {
-    var title = dialogBox.querySelector('#dialogTitle');
-    var image = dialogBox.querySelector('.dialog__title img');
-    var address = dialogBox.querySelector('.lodge__address');
-    var price = dialogBox.querySelector('.lodge__price');
-    var type = dialogBox.querySelector('.lodge__type');
-    var roomsGuests = dialogBox.querySelector('.lodge__rooms-and-guests');
-    var checkin = dialogBox.querySelector('.lodge__checkin-time');
-    var features = dialogBox.querySelectorAll('.feature__image');
-    var dialogDescription = dialogBox.querySelector('#dialogDescription');
-    var photosBox = dialogBox.querySelector('.lodge__photos');
-    var photos = photosBox.children;
+  // Функция показа диалогового окна с добавлением всех данных
+  window.showCard = function (element, data, callback) {
     title.innerHTML = data.offer.title;
     image.src = data.author.avatar;
     address.innerHTML = data.offer.address;
@@ -74,7 +133,7 @@
     if (dialogBox.classList.contains('hidden')) {
       dialogBox.classList.remove('hidden');
     }
-    callback(elem);
+    callback(element);
   };
 
   // Закрытие диалогового окна
