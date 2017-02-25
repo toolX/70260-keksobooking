@@ -245,7 +245,7 @@ window.initializePins = (function () {
     var pin = event.target;
 
     while (pin !== appWindow) {
-      if (pin.classList.contains('pin')) {
+      if (pin.classList.contains('pin') && !pin.classList.contains('pin__main')) {
         window.showCard(pin, pin.data, setActivePin);
         document.addEventListener('keydown', window.utils.escapeKeydownHandler);
         return;
