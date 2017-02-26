@@ -88,10 +88,14 @@
   fieldValues.forEach(function (item) {
     window.synchronizeFields(item[0].element, item[1].element, item[0].values, item[1].values, item[0].field, function (val) {
       item[1].element.value = val;
+      item[1].element.placeholder = val;
+      item[1].element.min = val;
     });
 
     window.synchronizeFields(item[1].element, item[0].element, item[1].values, item[0].values, item[0].field, function (val) {
       item[0].element.value = val;
+      item[0].element.placeholder = val;
+      item[0].element.min = val;
     });
   });
 })();

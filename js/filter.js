@@ -6,7 +6,7 @@
 
   // Установка обработчика событий на блок с фильтрами
   filtersToSelect.addEventListener('change', function (event) {
-    sortAppartments(window.filters, resetCopiedArray);
+    sortAppartments(window.filters, copyArray);
   });
 
   // Установка начальных фильтров (кроме фильтра по цене и чекбоксов)
@@ -22,11 +22,7 @@
       return element === fieldsArray[0];
     };
 
-    if (fieldsArray.every(compareFields)) {
-      selectField.value = fieldsArray[0];
-    } else {
-      selectField.value = 'any';
-    }
+    selectField.value = fieldsArray.every(compareFields) ? fieldsArray[0] : 'any';
   };
 
   // Начальная установка фильтра по цене
@@ -36,21 +32,21 @@
 
     arr.forEach(function (element) {
       var value = element.offer[field];
-      if (value < 10000) {
-        fieldsArray.push('low');
-      } else if (value < 50000) {
-        fieldsArray.push('middle');
-      } else {
-        fieldsArray.push('hight');
+
+      switch (true) {
+        case (value < 10000):
+          fieldsArray.push('low');
+          break;
+        case (value < 50000):
+          fieldsArray.push('middle');
+          break;
+        default:
+          fieldsArray.push('hight');
       }
     });
 
     var elementFilter = fieldsArray.reduce(function (prev, next) {
-      if (prev === next) {
-        return next;
-      } else {
-        return 'any';
-      }
+      return prev === next ? next : 'any';
     });
 
     selectField.value = elementFilter;
@@ -64,11 +60,8 @@
       var value = element.offer[field];
       return value.indexOf(filter) >= 0;
     };
-    if (arr.every(areElementsEqual)) {
-      checkbox.checked = true;
-    } else {
-      checkbox.checked = false;
-    }
+
+    checkbox.checked = arr.every(areElementsEqual) ? true : false;
   };
 
   // Начальная установка фильтров согласно общим значениям
@@ -113,15 +106,23 @@
   // Сортировка объявлений по цене
   var sortArrayByPrice = function (arr, value, field) {
     var newArr = [];
+
     arr.forEach(function (element) {
-      if (field === 'low' && +element.offer[value] < 10000) {
-        newArr.push(element);
-      } else if (field === 'middle' && (+element.offer[value] > 10000 && +element.offer[value] < 50000)) {
-        newArr.push(element);
-      } else if (field === 'hight' && +element.offer[value] >= 50000) {
-        newArr.push(element);
-      } else if (field === 'any') {
-        newArr.push(element);
+      var elementValue = parseInt(element.offer[value], 10);
+
+      switch (true) {
+        case (field === 'low' && elementValue < 10000):
+          newArr.push(element);
+          break;
+        case (field === 'middle' && (elementValue > 10000 && elementValue < 50000)):
+          newArr.push(element);
+          break;
+        case (field === 'hight' && elementValue >= 50000):
+          newArr.push(element);
+          break;
+        case (field === 'any'):
+          newArr.push(element);
+          break;
       }
     });
 
@@ -142,8 +143,8 @@
     }
   };
 
-  // Очистка скопированного массива с объявлениями
-  var resetCopiedArray = function () {
+  // Копирование основного массива с объявлениями
+  var copyArray = function () {
     window.copiedDataArray = window.similarApartments;
   };
 

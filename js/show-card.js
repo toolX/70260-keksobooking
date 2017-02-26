@@ -29,7 +29,11 @@
       y: event.clientY
     };
 
-    var onMouseMove = function (moveEvent) {
+    var onMouseMove = function (evt) {
+      mouseMove(evt, window.move);
+    };
+
+    var mouseMove = function (moveEvent, callback) {
       moveEvent.preventDefault();
 
       var shift = {
@@ -42,20 +46,7 @@
         y: moveEvent.clientY
       };
 
-      if (dialogBox.offsetTop - shift.y < DIALOGBOX_TOP_EDGE) {
-        dialogBox.style.top = DIALOGBOX_TOP_EDGE + 'px';
-      } else if (dialogBox.offsetTop - shift.y > DIALOGBOX_BOTTOM_EDGE) {
-        dialogBox.style.top = DIALOGBOX_BOTTOM_EDGE + 'px';
-      }
-
-      if (dialogBox.offsetLeft - shift.x < DIALOGBOX_LEFT_EDGE) {
-        dialogBox.style.left = DIALOGBOX_LEFT_EDGE + 'px';
-      } else if (dialogBox.offsetLeft - shift.x > DIALOGBOX_RIGHT_EDGE) {
-        dialogBox.style.left = DIALOGBOX_RIGHT_EDGE + 'px';
-      }
-
-      dialogBox.style.top = (dialogBox.offsetTop - shift.y) + 'px';
-      dialogBox.style.left = (dialogBox.offsetLeft - shift.x) + 'px';
+      callback(shift, dialogBox, DIALOGBOX_TOP_EDGE, DIALOGBOX_BOTTOM_EDGE, DIALOGBOX_LEFT_EDGE, DIALOGBOX_RIGHT_EDGE);
     };
 
     var onMouseUp = function (upEvent) {
