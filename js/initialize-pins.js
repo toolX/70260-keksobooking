@@ -20,7 +20,11 @@ window.initializePins = (function () {
       y: event.clientY
     };
 
-    var onMouseMove = function (moveEvent) {
+    var onMouseMove = function (evt) {
+      mouseMove(evt, window.move);
+    };
+
+    var mouseMove = function (moveEvent, callback) {
       moveEvent.preventDefault();
 
       var shift = {
@@ -33,20 +37,7 @@ window.initializePins = (function () {
         y: moveEvent.clientY
       };
 
-      if (mainPin.offsetTop - shift.y < PINMAIN_TOP_EDGE) {
-        mainPin.style.top = PINMAIN_TOP_EDGE + 'px';
-      } else if (mainPin.offsetTop - shift.y > PINMAIN_BOTTOM_EDGE) {
-        mainPin.style.top = PINMAIN_BOTTOM_EDGE + 'px';
-      }
-
-      if (mainPin.offsetLeft - shift.x < PINMAIN_LEFT_EDGE) {
-        mainPin.style.left = PINMAIN_LEFT_EDGE + 'px';
-      } else if (mainPin.offsetLeft - shift.x > PINMAIN_RIGHT_EDGE) {
-        mainPin.style.left = PINMAIN_RIGHT_EDGE + 'px';
-      }
-
-      mainPin.style.top = (mainPin.offsetTop - shift.y) + 'px';
-      mainPin.style.left = (mainPin.offsetLeft - shift.x) + 'px';
+      callback(shift, mainPin, PINMAIN_TOP_EDGE, PINMAIN_BOTTOM_EDGE, PINMAIN_LEFT_EDGE, PINMAIN_RIGHT_EDGE);
     };
 
     var onMouseUp = function (upEvent) {
@@ -129,7 +120,7 @@ window.initializePins = (function () {
   };
 
   // Поиск метки, на которой произошло событие клика или нажатия клавиши enter
-  var findPin = function (event) {
+  var pinHandler = function (event) {
     var pin = event.target;
 
     while (pin !== appWindow) {
@@ -143,12 +134,12 @@ window.initializePins = (function () {
   };
 
   // Добавление обработчика события клика на карту
-  appWindow.addEventListener('click', findPin);
+  appWindow.addEventListener('click', pinHandler);
 
   // Добавление обработчика события нажатия клавиши на карту
   appWindow.addEventListener('keydown', function (event) {
     if (window.utils.isEnterPressed(event)) {
-      findPin(event);
+      pinHandler(event);
     }
   });
 
